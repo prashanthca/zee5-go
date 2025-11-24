@@ -6,6 +6,7 @@ import (
 	"embed"
 	"encoding/base64"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -415,17 +416,18 @@ func ProxyRootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	port := flag.String("port", "8080", "Port to listen on")
+	flag.Parse()
 	cache := expirable.NewLRU[string, string](50, nil, time.Second*3600)
 	http.HandleFunc("/", ProxyRootHandler)
-    http.HandleFunc("/playlist.m3u", ProxyPlaylistHandler(cache))
+	http.HandleFunc("/playlist.m3u", ProxyPlaylistHandler(cache))
 	http.HandleFunc("/master.m3u8", ProxyMasterHandler)
 	http.HandleFunc("/index.m3u8", ProxyIndexHandler)
 	http.HandleFunc("/segment.ts", ProxySegmentHandler)
 	http.HandleFunc("/segment.mp4", ProxySegmentHandler)
 
-	port := "8080"
-	log.Printf("Proxy server starting on port %s...", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	log.Printf("Proxy server starting on port %s...", *port)
+	if err := http.ListenAndServe(":"+*port, nil); err != nil {
 		log.Fatalf("Server failed: %v", err)
 	}
 }
