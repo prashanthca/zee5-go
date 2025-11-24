@@ -19,7 +19,7 @@
 1.  Run the built executable:
 
     ```bash
-    ./zee5-proxy.exe
+    ./zee5-proxy.exe -port 8080
     ```
 
     The server will start on port `8080`.
